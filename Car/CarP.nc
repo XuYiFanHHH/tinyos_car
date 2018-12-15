@@ -95,9 +95,15 @@ implementation {
                 xAngle -= 300;
             }
         }
+        else if(value == 2){
+            xAngle = initAngle;
+        }
         m_value = xAngle;
         // send_command();
         // call Resource.request();
+        if(value == 2){
+            signal Car.InitAngle_1Done();
+        }
     }
 
     command error_t Car.Angle_2(uint16_t value) {
@@ -112,9 +118,15 @@ implementation {
                 yAngle -= 300;
             }
         }
+        else if(value == 2){
+            xAngle = initAngle;
+        }
         m_value = yAngle;
         // send_command;
         // call Resource.request();
+        if(value == 2){
+            signal Car.InitAngle_2Done();
+        }
     }
 
 

@@ -7,5 +7,7 @@ interface Car {
     command error_t Left(uint16_t value);
     command error_t Right(uint16_t value);
     command error_t Pause();
+	event error_t InitAngle_1Done();
+	event error_t InitAngle_2Done();
 	// command error_t InitAngle(uint16_t value);
 }
