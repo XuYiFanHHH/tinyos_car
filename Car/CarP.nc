@@ -80,7 +80,7 @@ implementation {
         call HplMsp430Usart.setModeUart(&config);
         call HplMsp430Usart.enableUart();
         U0CTL &= ~SYNC;
-        // send_command();
+        send_command();
     }
     
     command error_t Car.Angle_1(uint16_t value) {
@@ -99,8 +99,7 @@ implementation {
             xAngle = initAngle;
         }
         m_value = xAngle;
-        // send_command();
-        // call Resource.request();
+        call Resource.request();
         if(value == 2){
             signal Car.InitAngle_1Done();
         }
@@ -114,16 +113,15 @@ implementation {
             }
         }
         else if(value == 1) {
-            if(yAngle - 300 < 1800) {
+            if(yAngle - 300 > 1800) {
                 yAngle -= 300;
             }
         }
         else if(value == 2){
-            xAngle = initAngle;
+            yAngle = initAngle;
         }
         m_value = yAngle;
-        // send_command;
-        // call Resource.request();
+        call Resource.request();
         if(value == 2){
             signal Car.InitAngle_2Done();
         }
@@ -133,36 +131,31 @@ implementation {
     command error_t Car.Forward(uint16_t value) {
         type = 2;
         m_value = value;
-        // send_command();
-        // call Resource.request();
+        call Resource.request();
     }
 
     command error_t Car.Back(uint16_t value) {
         type = 3;
         m_value = value;
-        // send_command();
-        // call Resource.request();
+        call Resource.request();
     }
 
     command error_t Car.Left(uint16_t value) {
-        type = 4;
+        type = 5;
         m_value = value;
-        // send_command();
-        // call Resource.request();
+        call Resource.request();
     }
 
     command error_t Car.Right(uint16_t value) {
-        type = 5;
+        type = 4;
         m_value = value;
-        // send_command();
-        // call Resource.request();
+        call Resource.request();
     }
 
     command error_t Car.Pause() {
         type = 6;
         m_value = 0;
-        // send_command();
-        // call Resource.request();
+        call Resource.request();
     }
 
     command void Car.start() {

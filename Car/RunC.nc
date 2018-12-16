@@ -86,15 +86,14 @@ implementation {
         }
         else if(type == 7) {
             //angle2
-            call Leds.led0On();
             if(m_value == 0) {
-                blink(0, 1, 0);
+                blink(1, 1, 0);
             }
             else if(m_value == 1) {
-                blink(0, 0, 1);
+                blink(1, 0, 1);
             }
             else if(m_value == 2) {
-                blink(0, 1, 1);
+                blink(1, 1, 1);
             }
         }
         else if(type == 8) {
