@@ -6,7 +6,6 @@ module RemoteControlC {
         interface Boot;
         interface Leds;
         interface Timer<TMilli> as MilliTimer;
-        interface Timer<TMilli> as TestTimer;
         interface Packet;
         interface AMSend;
         interface SplitControl as AMControl;
@@ -32,9 +31,7 @@ implementation {
 	uint16_t joyStickXvalue;
 	uint16_t joyStickYvalue;
     uint8_t lastJoyStickState = 5;
-    uint8_t lastButtonState = 0;
-    // test count
-    uint16_t num = 0;
+    uint8_t lastAction = 5;
 
 	bool ADone;
 	bool BDone;
@@ -54,10 +51,7 @@ implementation {
     // set timer
 	event void AMControl.startDone(error_t err) {
 		if (err == SUCCESS) {
-            call Leds.led1Toggle();
-			// call MilliTimer.startPeriodic(TIMER_PERIOD_MILLI);
-            call TestTimer.startPeriodic(1000);
-            num = 0;
+			call MilliTimer.startPeriodic(TIMER_PERIOD_MILLI);
 		}
 		else {
 			call AMControl.start();
@@ -74,12 +68,46 @@ implementation {
         else
         {
             ControlMsg* sendPacket;
-            call Leds.led2Toggle();
             sendPacket = (ControlMsg*)(call Packet.getPayload(&packet, sizeof(ControlMsg)));
             sendPacket->type = action_type;
             sendPacket->data = action_data;
+            if(action_type == 1){
+                call Leds.led0Toggle();
+            }
+            else if(action_type == 2){
+                call Leds.led1Toggle();
+            }
+            else if(action_type == 3){
+                call Leds.led2Toggle();
+            }
+            else if(action_type == 4){
+                call Leds.led0Toggle();
+                call Leds.led1Toggle();
+            }
+            else if(action_type == 5){
+                call Leds.led0Toggle();
+                call Leds.led2Toggle();
+            }
+            else if(action_type == 6){
+                call Leds.led0Toggle();
+            }
+            else if(action_type == 7){
+                call Leds.led1Toggle();
+            }
+            else if(action_type == 8){
+                call Leds.led2Toggle();
+            }
+            else if(action_type == 9){
+                call Leds.led0Toggle();
+                call Leds.led1Toggle();
+            }
+            else if(action_type == 10){
+                call Leds.led1Toggle();
+                call Leds.led2Toggle();
+            }
             if ((call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(ControlMsg))) == SUCCESS) {
                 locked = TRUE;
+                lastAction = action_type;
             }
         }
     }
@@ -87,27 +115,61 @@ implementation {
     // sending complete, release lock
     event void AMSend.sendDone(message_t* bufPtr, error_t error) {
         locked = FALSE;
-        call Leds.led2Toggle();
+            
+        if(lastAction == 1){
+            call Leds.led0Toggle();
+        }
+        else if(lastAction == 2){
+            call Leds.led1Toggle();
+        }
+        else if(lastAction == 3){
+            call Leds.led2Toggle();
+        }
+        else if(lastAction == 4){
+            call Leds.led0Toggle();
+            call Leds.led1Toggle();
+        }
+        else if(lastAction == 5){
+            call Leds.led0Toggle();
+            call Leds.led2Toggle();
+        }
+        else if(lastAction == 6){
+            call Leds.led0Toggle();
+        }
+        else if(lastAction == 7){
+            call Leds.led1Toggle();
+        }
+        else if(lastAction == 8){
+            call Leds.led2Toggle();
+        }
+        else if(lastAction == 9){
+            call Leds.led0Toggle();
+            call Leds.led1Toggle();
+        }
+        else if(lastAction == 10){
+            call Leds.led1Toggle();
+            call Leds.led2Toggle();
+        }
     }
 
     void set_car_movement(){
-        // TURN LEFT
-        if (joyStickYvalue <= MIN_JOYSTICK) {
-            action_type = 3;
-            action_data = CAR_SPEED;
-        }
-        // TURN RIGHT
-        else if (joyStickYvalue >= MAX_JOYSTICK) {
+        // TURN RIGHT LEFT
+        if (joyStickXvalue <= MIN_JOYSTICK) {
             action_type = 4;
             action_data = CAR_SPEED;
         }
-        // BACK
+        // TURN LEFT
         else if (joyStickXvalue >= MAX_JOYSTICK) {
+            action_type = 3;
+            action_data = CAR_SPEED;
+        }
+        // BACK
+        else if (joyStickYvalue >= MAX_JOYSTICK) {
             action_type = 2;
             action_data = CAR_SPEED;
         }
         // FORWARD
-        else if (joyStickXvalue <= MIN_JOYSTICK) {
+        else if (joyStickYvalue <= MIN_JOYSTICK) {
             action_type = 1;
             action_data = CAR_SPEED;
         }
@@ -126,27 +188,27 @@ implementation {
 
     void set_arm_movement(){
         // RESET
-        if (!pinC) {
+        if (!pinC && !pinF) {
             action_type = 10;
             action_data = 0;
         }
         // GO RIGHT
-        else if ((pinA) && (!pinB) && (pinC) && (pinE) && (pinF)) {
+        else if (!pinE) {
             action_type = 6;
             action_data = 0;
         }
         // GO LEFT
-        else if ((!pinA) && (pinB) && (pinC) && (pinE) && (pinF)) {
+        else if (!pinC) {
             action_type = 7;
             action_data = 0;
         }
         // GO UP
-        else if ((pinA) && (!pinB) && (pinC) && (pinE) && (pinF)) {
+        else if (!pinB) {
             action_type = 8;
             action_data = 0;
         }
         // GO DOWN
-        else if ((!pinA) && (pinB) && (pinC) && (pinE) && (pinF)) {
+        else if (!pinF) {
             action_type = 9;
             action_data = 0;
         }
@@ -157,10 +219,9 @@ implementation {
             action_data = 0;
         }
         // if invalid instruction or repeate command, do not send the packet
-        if(action_type != 0 && action_type != lastButtonState)
+        if(action_type != 0)
         {
             send_command();
-            lastButtonState = action_type;
         }
     }
 
@@ -192,19 +253,6 @@ implementation {
 		call adcReadX.read();
 		call adcReadY.read();
 	}
-
-    // test timeout event
-    event void TestTimer.fired(){
-        action_type = num % 10 + 1;
-        if(action_type <= 4){
-            action_data == CAR_SPEED;
-        }
-        else{
-            action_data = 0;
-        }
-        send_command();
-        num++;
-    }
 
 	event void Button.startDone(bool value) {}
 

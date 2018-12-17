@@ -167,30 +167,30 @@ implementation {
 
     void armMoveRight(){
         type = 1;
-        m_value = 0;
-        set_leds();
-        call Car.Angle_1(0);
-    }
-
-    void armMoveLeft(){
-        type = 1;
         m_value = 1;
         set_leds();
         call Car.Angle_1(1);
     }
 
-    void armMoveUp(){
-        type = 7;
+    void armMoveLeft(){
+        type = 1;
         m_value = 0;
         set_leds();
-        call Car.Angle_2(0);
+        call Car.Angle_1(0);
     }
 
-    void armMoveDown(){
+    void armMoveUp(){
         type = 7;
         m_value = 1;
         set_leds();
         call Car.Angle_2(1);
+    }
+
+    void armMoveDown(){
+        type = 7;
+        m_value = 0;
+        set_leds();
+        call Car.Angle_2(0);
     }
 
     void resetAngle_1(){

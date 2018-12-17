@@ -10,7 +10,7 @@ enum {
 	AM_ControlMsg = 6,
     MIN_JOYSTICK = 1000,
     MAX_JOYSTICK = 4000,
-    TIMER_PERIOD_MILLI = 100,
+    TIMER_PERIOD_MILLI = 200,
     CAR_SPEED = 500,
 };
 

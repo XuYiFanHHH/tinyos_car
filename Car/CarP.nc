@@ -15,9 +15,9 @@ module CarP {
 implementation {
     uint8_t type;
     uint16_t m_value;
-    uint16_t xAngle = 3400;
-    uint16_t yAngle = 3400;
-    uint16_t initAngle = 3400;
+    uint16_t xAngle = 3000;
+    uint16_t yAngle = 3000;
+    uint16_t initAngle = 3000;
 	uint16_t max_speed;
 	uint16_t min_speed;
     msp430_uart_union_config_t config = {
